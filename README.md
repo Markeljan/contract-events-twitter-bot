@@ -1,4 +1,4 @@
-# Foundry Course Mint Bot
+# Contract Event Tracker -> Twitter Bot
 
 A fun project developed to monitor and celebrate NFT minting on the Arbitrum network.
 
