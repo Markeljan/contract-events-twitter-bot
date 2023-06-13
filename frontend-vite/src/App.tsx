@@ -67,17 +67,17 @@ const App = () => {
       <Confetti active={confetti} config={confettiConfig} />
       <div className="w-full md:max-w-2xl mx-4">
         <div className="flex justify-around mb-4">
-          <a href="https://twitter.com/PatrickAlphaC" target="_blank" rel="noreferrer" className="flex flex-col items-center">
+          <a href="https://twitter.com/PatrickAlphaC" target="_blank" rel="noreferrer" className="flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-100">
             <img src="/patrick.png" alt="PatrickAlphaC" className="w-20 h-20 rounded-full" />
             <span>PatrickAlphaC</span>
           </a>
-          <a href="https://twitter.com/foundrymintbot" target="_blank" rel="noreferrer" className="flex flex-col items-center">
-            <img src="/mintfrog.png" alt="Minting Bot" className="w-20 h-20 rounded-full" />
-            <span>NFT Mint Tracker</span>
+          <a href="https://youtu.be/umepbfKp5rI" target="_blank" rel="noreferrer" className="flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-100">
+            <img src="/youtube.png" alt="0xMarkeljan" className="w-20 h-20" />
+            <span>Foundry Course</span>
           </a>
-          <a href="https://twitter.com/0xMarkeljan" target="_blank" rel="noreferrer" className="flex flex-col items-center">
-            <img src="/markeljan.png" alt="0xMarkeljan" className="w-20 h-20 rounded-full" />
-            <span>0xMarkeljan</span>
+          <a href="https://twitter.com/foundrymintbot" target="_blank" rel="noreferrer" className="flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-100">
+            <img src="/twitter.svg" alt="Minting Bot" className="w-20 h-20" />
+            <span>NFT Mint Bot</span>
           </a>
         </div>
         <div className="text-4xl text-start px-8 py-4 bg-blue-800">
@@ -88,12 +88,12 @@ const App = () => {
             const { args: { solver, challenge, twitterHandle }, transactionHash } = event;
             return (
               <a
-                key={index}
-                href={`https://arbiscan.io/tx/${transactionHash}`}
-                target="_blank"
-                rel="noreferrer"
-                className="block mb-4 p-4 bg-teal-500 rounded-md overflow-hidden"
-              >
+              key={index}
+              href={`https://arbiscan.io/tx/${transactionHash}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block mb-4 p-4 bg-teal-500 rounded-md overflow-hidden transition-all duration-300 hover:bg-teal-400 active:bg-teal-600"
+            >
                 <div className="scrollable-card-content">
                   <div className="font-semibold">Solver: <span className="font-normal">{solver}</span></div>
                   <div className="font-semibold">Challenge: <span className="font-normal">{challenge}</span></div>
@@ -106,7 +106,7 @@ const App = () => {
       </div>
       <footer className="w-full mt-auto py-8 bg-gray-800">
         <div className="flex items-center justify-center">
-          <a href="https://github.com/markeljan/foundry-course-mint-bot" target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-white text-lg">
+                  <a href="https://github.com/Markeljan/contract-events-twitter-bot" target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-white text-lg">
             <img src="/github.png" alt="GitHub" className="w-8 h-8" />
             <span>Check out the source code on GitHub!</span>
           </a>
