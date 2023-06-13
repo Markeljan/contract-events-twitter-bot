@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { Log, createPublicClient, webSocket } from 'viem';
 import { arbitrum } from 'viem/chains';
-import { FOUNDRY_COURSE_CONTRACT_ADDRESS, FOUNDRY_COURSE_CONTRACT_ABI } from './constants.js';
+import { FOUNDRY_COURSE_CONTRACT_ADDRESS, FOUNDRY_COURSE_CONTRACT_ABI } from './contractData.js';
 import { sendTweet } from './sendTweet.js';
 dotenv.config();
 
