@@ -9,7 +9,14 @@ const TWITTER_CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET || '';
 const TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN || '';
 const TWITTER_TOKEN_SECRET = process.env.TWITTER_TOKEN_SECRET || '';
 
-export async function sendTweet(twitterHandle: string) {
+export async function sendTweet(twitterHandle: string, tokenId: number, challengeAttribute: string) {
+    const openseaUrl = `https://opensea.io/assets/arbitrum/0x39338138414df90ec67dc2ee046ab78bcd4f56d9/${tokenId}`;
+
+    const message = `Congrats ${twitterHandle} for minting the '${challengeAttribute}' Lesson of the Foundry full course!\n\nYou can view the NFT on Opensea here\n${openseaUrl}`;
+    if(!twitterHandle) {
+        return;
+    }
+    
     const oauth = new OAuth({
         consumer: { key: TWITTER_CONSUMER_KEY, secret: TWITTER_CONSUMER_SECRET },
         signature_method: 'HMAC-SHA1',
@@ -27,7 +34,7 @@ export async function sendTweet(twitterHandle: string) {
         const response = await axios({
             url: request_data.url,
             method: request_data.method,
-            data: { text: `🎉Congrats ${twitterHandle}🎉  You've solved the Ultimate, Learn Blockchain Development, Solidity, AI-Powered Smart Contract Course | Foundry Edition Challenge!!  Check out the course by PatrickAlphaC https://youtu.be/umepbfKp5rI` },
+            data: { text: message },
             headers: oauth.toHeader(oauth.authorize(request_data, { key: TWITTER_ACCESS_TOKEN, secret: TWITTER_TOKEN_SECRET })),
         } as AxiosRequestConfig);
         console.log(response.data);

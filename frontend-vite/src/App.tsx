@@ -7,7 +7,7 @@ import Confetti from 'react-dom-confetti';
 const confettiConfig = {
   spread: 360,
   startVelocity: 40,
-  elementCount: 600,
+  elementCount: 250,
   decay: 0.91,
 };
 
@@ -23,7 +23,7 @@ const App = () => {
       transport: webSocket(`wss://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`)
     });
 
-    const httpClient = createPublicClient({
+    const publicClient = createPublicClient({
       chain: arbitrum,
       transport: http(`https://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`)
     })
@@ -47,14 +47,14 @@ const App = () => {
     }
 
     const getPreviousEvents = async () => {
-      const filter = await httpClient.createContractEventFilter({
+      const filter = await publicClient.createContractEventFilter({
         abi: FOUNDRY_COURSE_CONTRACT_ABI,
         address: FOUNDRY_COURSE_CONTRACT_ADDRESS,
         eventName: 'ChallengeSolved',
         fromBlock: 97795932n,
       })
 
-      const fetchedEvents = await httpClient.getFilterLogs({ filter });
+      const fetchedEvents = await publicClient.getFilterLogs({ filter });
       setEvents(fetchedEvents);
     }
 
