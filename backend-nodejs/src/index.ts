@@ -146,8 +146,6 @@ console.log("Listening for ChallengeSolved events...");
 
 //   handleChallengeSolvedEvent(twitterHandle, transactionHash);
 // }
-// for (let i = 1; i <= 3; i++) {
-//   triggerPastEvent(i);
-//   //wait 3 seconds before triggering next event  WARNING YOU DONOT SEND ACTUAL TWEETS
-//   await new Promise(resolve => setTimeout(resolve, 500));
-// }
+
+// triggerPastEvent(120);
+
