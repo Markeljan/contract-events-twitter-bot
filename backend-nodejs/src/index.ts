@@ -55,6 +55,11 @@ const handleChallengeSolvedEvent = async (twitterHandleInput: string, transactio
   const handle = sanitizeHandle(twitterHandleInput);
   const tokenId = await getTokenId(transactionHash);
   const challengeAttribute = await getChallengeAttribute(tokenId);
+  if (!handle) {
+    console.log(`Invalid twitter handle ${twitterHandleInput} for transaction hash ${transactionHash}`);
+    return;
+  }
+  console.log(`Sending tweet for ${handle} with token id ${tokenId} and challenge attribute ${challengeAttribute}`)
   sendTweet(handle, tokenId, challengeAttribute);
 };
 
@@ -130,7 +135,6 @@ console.log("Listening for ChallengeSolved events...");
 ////////////////////////////////////////
 // Trigger past event(s) for testing //
 //////////////////////////////////////
-
 // const triggerPastEvent = async (eventIndex: number) => {
 //   const challengeSolvedFilter: any = await publicClient.createContractEventFilter({
 //     abi: FOUNDRY_COURSE_CONTRACT_ABI,
@@ -146,6 +150,4 @@ console.log("Listening for ChallengeSolved events...");
 
 //   handleChallengeSolvedEvent(twitterHandle, transactionHash);
 // }
-
-// triggerPastEvent(120);
 
