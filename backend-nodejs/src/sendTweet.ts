@@ -12,8 +12,8 @@ const TWITTER_TOKEN_SECRET = process.env.TWITTER_TOKEN_SECRET || '';
 let tweetQueue = [];
 let isTweeting = false;
 
-export async function sendTweet(twitterHandle: string, tokenId: number, challengeAttribute: string) {
-  const tweetData = { twitterHandle, tokenId, challengeAttribute };
+export async function sendTweet(twitterHandle: string, tokenId: number, lessonId: number) {
+  const tweetData = { twitterHandle, tokenId, lessonId };
   tweetQueue.push(tweetData);
 
   if (!isTweeting) {
@@ -28,10 +28,10 @@ async function tweetFromQueue() {
     return;
   }
 
-  const { twitterHandle, tokenId, challengeAttribute } = tweetQueue.shift();
+  const { twitterHandle, tokenId, lessonId } = tweetQueue.shift();
   const openseaUrl = `https://opensea.io/assets/arbitrum/0x39338138414df90ec67dc2ee046ab78bcd4f56d9/${tokenId}`;
 
-  const message = `Congrats ${twitterHandle} for minting the '${challengeAttribute}' Lesson of the Foundry full course!\n\nYou can view the NFT on Opensea here\n${openseaUrl}`;
+  const message = `Congrats ${twitterHandle} for minting Lesson ${lessonId} of the Foundry full course!\n\nYou can view the NFT on Opensea here\n${openseaUrl}`;
 
   const oauth = new OAuth({
     consumer: { key: TWITTER_CONSUMER_KEY, secret: TWITTER_CONSUMER_SECRET },

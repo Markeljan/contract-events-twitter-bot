@@ -637,3 +637,22 @@ export const FOUNDRY_COURSE_CONTRACT_ABI = [
         "type": "function"
     }
 ]
+
+export const LESSON_DICTIONARY = {
+    "0x2e99a4ca9c85383ccb54769adb3837437e296479": "1",
+    "0x76d2403b80591d5f6af2b468bc14205fa5452ac0": "2",
+    "0x34d130b174f4a30a846fed7c02fcf53a19a4c2b6": "3",
+    "0xa2626be06c11211a44fb6ca324a67ebdbcd30b70": "4",
+    "0xf988ebf9d801f4d3595592490d7ff029e438deca": "5",
+    "0xdeb8d8efef7049e280af1d5fe3a380f3be93b648": "6",
+    "0xcf4fba490197452bd414e16d563623253efb57d3": "7",
+    "0x33ee14fb8816c92fe401165330bbe29706942183": "8",
+    "0xdf7cdff0c5e85c974d6377244d9a0ceffa2b7a86": "9",
+    "0xab67557218f60c06aca750b9f8a20018e5604ebf": "10",
+    "0x444ae92325dce5d14d40c30d2657547513674dd6": "11",
+    "0x3dbbf2f9acfb9aac8e0b31563dd75a2d69148d64": "12",
+    "0x3ad9f29ab266e4828450b33df7a9b9d7355cd821": "13",
+    "0xc584bd01fd60f671409661a6802170bbefba5c47": "14",
+    "0xa0c7ada2c7c29729d12e2649bc6a0a293ac46725": "15"
+  }
+  

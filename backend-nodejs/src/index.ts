@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import {
+  GetFilterLogsReturnType,
   Log,
   TransactionReceipt,
   createPublicClient,
@@ -12,7 +13,8 @@ import {
 import { arbitrum } from 'viem/chains';
 import {
   FOUNDRY_COURSE_CONTRACT_ADDRESS,
-  FOUNDRY_COURSE_CONTRACT_ABI
+  FOUNDRY_COURSE_CONTRACT_ABI,
+  LESSON_DICTIONARY
 } from './contractData.js';
 import { sendTweet } from './sendTweet.js';
 
@@ -30,12 +32,14 @@ const publicClient = createPublicClient({
   transport: http(`https://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`)
 });
 
-type ExpectedLog = {
-  args: {
+type ExpectedLogArgs = {
     solver: `0x${string}`;
     challenge: `0x${string}`;
     twitterHandle: string;
-  };
+  }
+
+type ExpectedLog = {
+  args: ExpectedLogArgs;
   eventName: string;
   transactionHash: `0x${string}`;
 } & Log
@@ -51,16 +55,18 @@ const sanitizeHandle = (twitterHandleInput: string): string => {
 }
 
 // Function to handle ChallengeSolved event
-const handleChallengeSolvedEvent = async (twitterHandleInput: string, transactionHash: `0x${string}`) => {
+const handleChallengeSolvedEvent = async (twitterHandleInput: string, challenge: `0x${string}`, transactionHash: `0x${string}`) => {
   const handle = sanitizeHandle(twitterHandleInput);
+  console.log('CHallenge: ', challenge);
+  const lessonId = LESSON_DICTIONARY[challenge.toLowerCase()];
+  console.log('LessonId: ', lessonId);
   const tokenId = await getTokenId(transactionHash);
-  const challengeAttribute = await getChallengeAttribute(tokenId);
   if (!handle) {
     console.log(`Invalid twitter handle ${twitterHandleInput} for transaction hash ${transactionHash}`);
     return;
   }
-  console.log(`Sending tweet for ${handle} with token id ${tokenId} and challenge attribute ${challengeAttribute}`)
-  sendTweet(handle, tokenId, challengeAttribute);
+  console.log(`Sending tweet for ${handle} with tokenId ${tokenId} and lessonId ${lessonId}`);
+  //sendTweet(handle, tokenId, challengeAttribute);
 };
 
 // Function to get token id
@@ -68,7 +74,7 @@ const getTokenId = async (transactionHash: `0x${string}`): Promise<number> => {
   const transactionReceipt: TransactionReceipt = await publicClient.getTransactionReceipt({
     hash: transactionHash,
   });
-  const topics = encodeEventTopics({
+  const transferTopics = encodeEventTopics({
     abi: FOUNDRY_COURSE_CONTRACT_ABI,
     eventName: 'Transfer',
     args: {
@@ -78,7 +84,7 @@ const getTokenId = async (transactionHash: `0x${string}`): Promise<number> => {
 
   let tokenId;
   for (let i = 0; i < transactionReceipt.logs.length; i++) {
-    if (transactionReceipt.logs[i]['topics'][0] !== topics[0] || transactionReceipt.logs[i]['topics'][1] !== topics[1]) {
+    if (transactionReceipt.logs[i]['topics'][0] !== transferTopics[0] || transactionReceipt.logs[i]['topics'][1] !== transferTopics[1]) {
       continue;
     }
 
@@ -102,20 +108,20 @@ const getTokenId = async (transactionHash: `0x${string}`): Promise<number> => {
 };
 
 // Function to get challenge attribute
-const getChallengeAttribute = async (tokenId: number): Promise<string> => {
-  const tokenUri = await publicClient.readContract({
-    abi: FOUNDRY_COURSE_CONTRACT_ABI,
-    address: FOUNDRY_COURSE_CONTRACT_ADDRESS,
-    functionName: 'tokenURI',
-    args: [tokenId],
-  });
+// const getChallengeAttribute = async (tokenId: number): Promise<string> => {
+//   const tokenUri = await publicClient.readContract({
+//     abi: FOUNDRY_COURSE_CONTRACT_ABI,
+//     address: FOUNDRY_COURSE_CONTRACT_ADDRESS,
+//     functionName: 'tokenURI',
+//     args: [tokenId],
+//   });
 
-  const parsedUri = tokenUri.toString().split("base64,")[1];
-  const jsonString = Buffer.from(parsedUri, 'base64').toString('utf-8');
-  const jsonData = JSON.parse(jsonString);
-  const challengeAttribute = jsonData?.attributes[0]?.trait_type;
-  return challengeAttribute;
-};
+//   const parsedUri = tokenUri.toString().split("base64,")[1];
+//   const jsonString = Buffer.from(parsedUri, 'base64').toString('utf-8');
+//   const jsonData = JSON.parse(jsonString);
+//   const challengeAttribute = jsonData?.attributes[0]?.trait_type;
+//   return challengeAttribute;
+// };
 
 // Watch for contract event
 webSocketClient.watchContractEvent({
@@ -125,7 +131,7 @@ webSocketClient.watchContractEvent({
   onLogs: (logs: ExpectedLog[]) => {
     console.log("New Challenge Solved Event!", logs);
     const { args: { solver, challenge, twitterHandle }, eventName, transactionHash } = logs[0];
-    handleChallengeSolvedEvent(twitterHandle, transactionHash);
+    handleChallengeSolvedEvent(twitterHandle, challenge, transactionHash);
   },
 });
 
@@ -143,11 +149,10 @@ console.log("Listening for ChallengeSolved events...");
 //     fromBlock: 97795932n,
 //     strict: true,
 //   });
-//   const logs: Log[] = await publicClient.getFilterLogs({ filter: challengeSolvedFilter });
-
+  
+//   const logs: GetFilterLogsReturnType = await publicClient.getFilterLogs({ filter: challengeSolvedFilter });
 //   const transactionHash = logs[eventIndex].transactionHash;
-//   const { twitterHandle } = logs[eventIndex]['args']
-
-//   handleChallengeSolvedEvent(twitterHandle, transactionHash);
+//   const { twitterHandle, challenge } = logs[eventIndex].args as ExpectedLogArgs;
+//   console.log("Triggering past event for: ", twitterHandle, challenge, transactionHash)
+//   //handleChallengeSolvedEvent(twitterHandle, challenge, transactionHash);
 // }
-
