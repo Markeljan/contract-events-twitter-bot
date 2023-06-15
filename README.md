@@ -56,5 +56,5 @@ Feel free to fork this repository, submit issues, or pull requests if you want t
 
 ![Frontend Tracker](https://github.com/Cyfrin/foundry-full-course-f23/assets/12901349/84ee315a-98a7-45ec-b35f-ca16bf7b5154)
 
-![Twitter Bot](https://github.com/Cyfrin/foundry-full-course-f23/assets/12901349/371c66be-09dd-489c-9def-e81da83a1852)
+![Twitter Bot](https://github.com/Markeljan/contract-events-twitter-bot/assets/12901349/4e78f034-7da5-4230-8f99-a9a59602164f)
 
