@@ -57,16 +57,14 @@ const sanitizeHandle = (twitterHandleInput: string): string => {
 // Function to handle ChallengeSolved event
 const handleChallengeSolvedEvent = async (twitterHandleInput: string, challenge: `0x${string}`, transactionHash: `0x${string}`) => {
   const handle = sanitizeHandle(twitterHandleInput);
-  console.log('CHallenge: ', challenge);
   const lessonId = LESSON_DICTIONARY[challenge.toLowerCase()];
-  console.log('LessonId: ', lessonId);
   const tokenId = await getTokenId(transactionHash);
   if (!handle) {
     console.log(`Invalid twitter handle ${twitterHandleInput} for transaction hash ${transactionHash}`);
     return;
   }
   console.log(`Sending tweet for ${handle} with tokenId ${tokenId} and lessonId ${lessonId}`);
-  //sendTweet(handle, tokenId, challengeAttribute);
+  sendTweet(handle, tokenId, lessonId);
 };
 
 // Function to get token id
