@@ -75,7 +75,7 @@ const App = () => {
             <img src="/youtube.png" alt="0xMarkeljan" className="w-20 h-20" />
             <span>Foundry Course</span>
           </a>
-          <a href="https://twitter.com/nftmint" target="_blank" rel="noreferrer" className="flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-100">
+          <a href="https://twitter.com/foundrynftmints" target="_blank" rel="noreferrer" className="flex flex-col items-center transition-all duration-300 hover:scale-105 active:scale-100">
             <img src="/twitter.svg" alt="Track Mints" className="w-20 h-20" />
             <span>Track Mints</span>
           </a>
