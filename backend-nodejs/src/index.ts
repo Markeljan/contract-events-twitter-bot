@@ -122,7 +122,7 @@ const getTokenId = async (transactionHash: `0x${string}`): Promise<number> => {
 // };
 
 // Watch for contract event
-webSocketClient.watchContractEvent({
+const unwatch = webSocketClient.watchContractEvent({
   address: FOUNDRY_COURSE_CONTRACT_ADDRESS,
   abi: FOUNDRY_COURSE_CONTRACT_ABI,
   eventName: 'ChallengeSolved',
