@@ -23,4 +23,6 @@ dist
 *.sw?
 
 .env
+
 foundry-mint-kp.pem
+# ssh -i "foundry-course-mint-bot-kp.pem" ec2-user@ec2-18-205-116-100.compute-1.amazonaws.com
