@@ -1,8 +1,6 @@
 import {
   Address,
   Hash,
-  Hex,
-  Log,
   TransactionReceipt,
   createPublicClient,
   decodeEventLog,
@@ -115,19 +113,40 @@ function formatTweetMessage({ twitterHandle, tokenId, lessonId, courseName }: Tw
 //////////////////////////////////////
 //  Begin listening for new events  //
 //////////////////////////////////////
-const unwatch = webSocketClient.watchContractEvent({
-  address: [FOUNDRY_COURSE_ADDRESS, SECURITY_COURSE_ADDRESS],
-  abi: [FOUNDRY_COURSE_ABI, SECURITY_COURSE_ABI],
+const unwatchFoundryContract = webSocketClient.watchContractEvent({
+  address: FOUNDRY_COURSE_ADDRESS,
+  abi: FOUNDRY_COURSE_ABI,
   eventName: "ChallengeSolved",
+  onError: (e) => {
+    console.log(e);
+  },
   onLogs: (logs) => {
     const {
-      address,
       transactionHash,
       args: { challenge, twitterHandle },
     } = logs[0] as ChallengeEventLog;
-    const courseName = address === FOUNDRY_COURSE_ADDRESS ? "foundry" : "security";
     try {
-      handleChallengeSolvedEvent({ twitterHandle, challenge, transactionHash, courseName });
+      handleChallengeSolvedEvent({ twitterHandle, challenge, transactionHash, courseName: "foundry" });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+});
+
+const unwatchSecurityContract = webSocketClient.watchContractEvent({
+  address: SECURITY_COURSE_ADDRESS,
+  abi: SECURITY_COURSE_ABI,
+  eventName: "ChallengeSolved",
+  onError: (e) => {
+    console.log(e);
+  },
+  onLogs: (logs) => {
+    const {
+      transactionHash,
+      args: { challenge, twitterHandle },
+    } = logs[0] as ChallengeEventLog;
+    try {
+      handleChallengeSolvedEvent({ twitterHandle, challenge, transactionHash, courseName: "security" });
     } catch (e) {
       console.log(e);
     }
