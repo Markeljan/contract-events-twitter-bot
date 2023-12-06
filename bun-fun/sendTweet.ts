@@ -39,6 +39,7 @@ async function tweetFromQueue() {
       method: request_data.method,
       body: JSON.stringify({ text: nextTweet }),
       headers: {
+        "Content-Type": "application/json",
         ...oauth.toHeader(oauth.authorize(request_data, { key: TWITTER_ACCESS_TOKEN, secret: TWITTER_TOKEN_SECRET })),
       },
     });
