@@ -1,21 +1,21 @@
 # bun-fun
 
-To install dependencies:
+Setup:
 
 ```bash
 bun install
-```
 
-To run:
+# development
+bun run dev
 
-```bash
-bun start
+# production build
+bun run build
+bun run start
 ```
 
 Simulate or trigger past events:
 
 ```bash
-
 # simulate tweet
 bun run triggerEvent.ts <eventIndex> <courseName>
 
