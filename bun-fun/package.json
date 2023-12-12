@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "bun src/index.ts",
     "build": "bun build src/index.ts --outdir build --target node",
-    "start": "bun build/index.js"
+    "start": "bun build/index.js",
+    "triggerEvent": "bun run src/triggerPastEvent.ts"
   },
   "devDependencies": {
     "bun-types": "latest"
