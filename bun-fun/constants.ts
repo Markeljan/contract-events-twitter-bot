@@ -1,5 +1,7 @@
 import { Address } from "viem";
 
+export const RPC_PROVIDER_API_KEY = `${process.env.RPC_PROVIDER_API_KEY}`;
+
 export const FOUNDRY_COURSE_ADDRESS: Address = "0x39338138414Df90EC67dC2EE046ab78BcD4F56D9";
 export const SECURITY_COURSE_ADDRESS: Address = "0xDe0e797bfAd78F0615d75430C53F8fe3C9e49883";
 

@@ -10579,53 +10579,8 @@ var arbitrum = defineChain({
     }
   }
 });
-// sendTweet.ts
-var import_oauth_1 = __toESM(require_oauth_1_0a(), 1);
-async function sendTweet(message) {
-  tweetQueue.push(message);
-  if (tweetQueue.length === 1) {
-    tweetFromQueue();
-  }
-}
-async function tweetFromQueue() {
-  const nextTweet = tweetQueue.shift();
-  if (!nextTweet)
-    return;
-  const oauth = new import_oauth_1.default({
-    consumer: { key: TWITTER_CONSUMER_KEY, secret: TWITTER_CONSUMER_SECRET },
-    signature_method: "HMAC-SHA1",
-    hash_function(base_string, key) {
-      return createHmac("sha1", key).update(base_string).digest("base64");
-    }
-  });
-  const request_data = {
-    url: "https://api.twitter.com/2/tweets",
-    method: "POST"
-  };
-  try {
-    const response = await fetch(request_data.url, {
-      method: request_data.method,
-      body: JSON.stringify({ text: nextTweet }),
-      headers: {
-        "Content-Type": "application/json",
-        ...oauth.toHeader(oauth.authorize(request_data, { key: TWITTER_ACCESS_TOKEN, secret: TWITTER_TOKEN_SECRET }))
-      }
-    });
-    const body = await response.json();
-    console.log(body);
-  } catch (e) {
-    console.log(e);
-  }
-  setTimeout(tweetFromQueue, 1e4);
-}
-var { createHmac } = await import("crypto");
-var TWITTER_CONSUMER_KEY = `${process.env.TWITTER_CONSUMER_KEY}`;
-var TWITTER_CONSUMER_SECRET = `${process.env.TWITTER_CONSUMER_SECRET}`;
-var TWITTER_ACCESS_TOKEN = `${process.env.TWITTER_ACCESS_TOKEN}`;
-var TWITTER_TOKEN_SECRET = `${process.env.TWITTER_TOKEN_SECRET}`;
-var tweetQueue = [];
-
-// contractData.ts
+// constants.ts
+var RPC_PROVIDER_API_KEY = `${process.env.RPC_PROVIDER_API_KEY}`;
 var FOUNDRY_COURSE_ADDRESS = "0x39338138414Df90EC67dC2EE046ab78BcD4F56D9";
 var SECURITY_COURSE_ADDRESS = "0xDe0e797bfAd78F0615d75430C53F8fe3C9e49883";
 var LESSON_DICTIONARY = {
@@ -11614,7 +11569,53 @@ var SECURITY_COURSE_ABI = [
   }
 ];
 
-// index.ts
+// sendTweet.ts
+var import_oauth_1 = __toESM(require_oauth_1_0a(), 1);
+async function sendTweet(message) {
+  tweetQueue.push(message);
+  if (tweetQueue.length === 1) {
+    tweetFromQueue();
+  }
+}
+async function tweetFromQueue() {
+  const nextTweet = tweetQueue.shift();
+  if (!nextTweet)
+    return;
+  const oauth = new import_oauth_1.default({
+    consumer: { key: TWITTER_CONSUMER_KEY, secret: TWITTER_CONSUMER_SECRET },
+    signature_method: "HMAC-SHA1",
+    hash_function(base_string, key) {
+      return createHmac("sha1", key).update(base_string).digest("base64");
+    }
+  });
+  const request_data = {
+    url: "https://api.twitter.com/2/tweets",
+    method: "POST"
+  };
+  try {
+    const response = await fetch(request_data.url, {
+      method: request_data.method,
+      body: JSON.stringify({ text: nextTweet }),
+      headers: {
+        "Content-Type": "application/json",
+        ...oauth.toHeader(oauth.authorize(request_data, { key: TWITTER_ACCESS_TOKEN, secret: TWITTER_TOKEN_SECRET }))
+      }
+    });
+    const body = await response.json();
+    console.log(body);
+  } catch (e) {
+    console.log(e);
+  }
+  setTimeout(tweetFromQueue, 1e4);
+}
+var { createHmac } = await import("crypto");
+var TWITTER_CONSUMER_KEY = `${process.env.TWITTER_CONSUMER_KEY}`;
+var TWITTER_CONSUMER_SECRET = `${process.env.TWITTER_CONSUMER_SECRET}`;
+var TWITTER_ACCESS_TOKEN = `${process.env.TWITTER_ACCESS_TOKEN}`;
+var TWITTER_TOKEN_SECRET = `${process.env.TWITTER_TOKEN_SECRET}`;
+var tweetQueue = [];
+
+// handleChallengeSolved.ts
 var formatTweetMessage = function({ twitterHandle, tokenId, lessonId, courseName }) {
   const contractAddress = courseName === "foundry" ? FOUNDRY_COURSE_ADDRESS : SECURITY_COURSE_ADDRESS;
   const openseaUrl = `https://opensea.io/assets/arbitrum/${contractAddress}/${tokenId}`;
@@ -11622,15 +11623,31 @@ var formatTweetMessage = function({ twitterHandle, tokenId, lessonId, courseName
   const message = `Congrats ${twitterHandle} for minting Lesson ${lessonId} of the ${courseNameCapitalized} course!\n\nYou can view the NFT on Opensea here\n${openseaUrl}`;
   return message;
 };
-var RPC_PROVIDER_API_KEY = `${process.env.RPC_PROVIDER_API_KEY}`;
-var webSocketClient = createPublicClient({
-  chain: arbitrum,
-  transport: webSocket2(`wss://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`)
-});
 var publicClient = createPublicClient({
   chain: arbitrum,
   transport: http2(`https://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`)
 });
+var handleChallengeSolvedEvent = async ({
+  twitterHandle,
+  challenge,
+  transactionHash,
+  courseName,
+  shouldSendTweet = false
+}) => {
+  const sanitizedHandle = sanitizeHandle(twitterHandle);
+  const lessonId = LESSON_DICTIONARY[challenge];
+  const tokenId = await getTokenId(transactionHash, courseName);
+  if (!twitterHandle) {
+    throw new Error("Invalid twitter handle: " + twitterHandle);
+  }
+  const tweetMessage = formatTweetMessage({ twitterHandle: sanitizedHandle, tokenId, lessonId, courseName });
+  if (shouldSendTweet) {
+    console.log(`Sending tweet: ${tweetMessage}`);
+    sendTweet(tweetMessage);
+  } else {
+    console.log("Simulating tweet: ", tweetMessage);
+  }
+};
 var sanitizeHandle = (twitterHandleInput) => {
   let handle = twitterHandleInput.replace(/\s/g, "");
   if (handle.startsWith("x.com/"))
@@ -11646,22 +11663,6 @@ var sanitizeHandle = (twitterHandleInput) => {
   if (!/^@[a-zA-Z0-9_]{1,15}$/.test(handle))
     throw new Error("Invalid twitter handle: " + handle);
   return handle;
-};
-var handleChallengeSolvedEvent = async ({
-  twitterHandle,
-  challenge,
-  transactionHash,
-  courseName
-}) => {
-  const sanitizedHandle = sanitizeHandle(twitterHandle);
-  const lessonId = LESSON_DICTIONARY[challenge];
-  const tokenId = await getTokenId(transactionHash, courseName);
-  if (!twitterHandle) {
-    throw new Error("Invalid twitter handle: " + twitterHandle);
-  }
-  const tweetMessage = formatTweetMessage({ twitterHandle: sanitizedHandle, tokenId, lessonId, courseName });
-  console.log(`Sending tweet: ${tweetMessage}`);
-  sendTweet(tweetMessage);
 };
 var getTokenId = async (transactionHash, courseName) => {
   const transactionReceipt2 = await publicClient.getTransactionReceipt({
@@ -11689,6 +11690,12 @@ var getTokenId = async (transactionHash, courseName) => {
   }
   throw new Error("Could not get tokenId in event logs for transaction " + transactionHash);
 };
+
+// index.ts
+var webSocketClient = createPublicClient({
+  chain: arbitrum,
+  transport: webSocket2(`wss://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`)
+});
 var unwatchFoundryContract = webSocketClient.watchContractEvent({
   address: FOUNDRY_COURSE_ADDRESS,
   abi: FOUNDRY_COURSE_ABI,
@@ -11702,7 +11709,13 @@ var unwatchFoundryContract = webSocketClient.watchContractEvent({
       args: { challenge, twitterHandle }
     } = logs[0];
     try {
-      handleChallengeSolvedEvent({ twitterHandle, challenge, transactionHash, courseName: "foundry" });
+      handleChallengeSolvedEvent({
+        twitterHandle,
+        challenge,
+        transactionHash,
+        courseName: "foundry",
+        shouldSendTweet: true
+      });
     } catch (e) {
       console.log(e);
     }
@@ -11721,7 +11734,13 @@ var unwatchSecurityContract = webSocketClient.watchContractEvent({
       args: { challenge, twitterHandle }
     } = logs[0];
     try {
-      handleChallengeSolvedEvent({ twitterHandle, challenge, transactionHash, courseName: "security" });
+      handleChallengeSolvedEvent({
+        twitterHandle,
+        challenge,
+        transactionHash,
+        courseName: "security",
+        shouldSendTweet: true
+      });
     } catch (e) {
       console.log(e);
     }
