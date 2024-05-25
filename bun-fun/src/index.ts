@@ -1,26 +1,27 @@
 import { createPublicClient, webSocket } from "viem";
-import { arbitrum } from "viem/chains";
+import { arbitrum, zkSync } from "viem/chains";
 import { ChallengeEventLog } from "./types.ts";
-import {
-  FOUNDRY_COURSE_ADDRESS,
-  FOUNDRY_COURSE_ABI,
-  SECURITY_COURSE_ADDRESS,
-  SECURITY_COURSE_ABI,
-  RPC_PROVIDER_API_KEY,
-} from "./constants.ts";
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG, RPC_PROVIDER_API_KEY } from "./constants.ts";
 import { handleChallengeSolvedEvent } from "./handleChallengeSolved.ts";
 
-const webSocketClient = createPublicClient({
+const shouldSendTweet = process.env.NODE_ENV === "production";
+
+const webSocketClientArbitrum = createPublicClient({
   chain: arbitrum,
   transport: webSocket(`wss://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`),
+});
+
+const webSocketClientZkSync = createPublicClient({
+  chain: zkSync,
+  transport: webSocket(`wss://zksync-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`),
 });
 
 //////////////////////////////////////
 // Begin listening for new events  //
 ////////////////////////////////////
-const unwatchFoundryContract = webSocketClient.watchContractEvent({
-  address: FOUNDRY_COURSE_ADDRESS,
-  abi: FOUNDRY_COURSE_ABI,
+const unwatchFoundryContract = webSocketClientArbitrum.watchContractEvent({
+  address: FOUNDRY_COURSE_CONFIG.address[arbitrum.id],
+  abi: FOUNDRY_COURSE_CONFIG.abi,
   eventName: "ChallengeSolved",
   onError: (e) => {
     console.log(e);
@@ -36,7 +37,8 @@ const unwatchFoundryContract = webSocketClient.watchContractEvent({
         challenge,
         transactionHash,
         courseName: "foundry",
-        shouldSendTweet: true,
+        chainId: arbitrum.id,
+        shouldSendTweet,
       });
     } catch (e) {
       console.log(e);
@@ -44,9 +46,9 @@ const unwatchFoundryContract = webSocketClient.watchContractEvent({
   },
 });
 
-const unwatchSecurityContract = webSocketClient.watchContractEvent({
-  address: SECURITY_COURSE_ADDRESS,
-  abi: SECURITY_COURSE_ABI,
+const unwatchSecurityContract = webSocketClientArbitrum.watchContractEvent({
+  address: SECURITY_COURSE_CONFIG.address[arbitrum.id],
+  abi: SECURITY_COURSE_CONFIG.abi,
   eventName: "ChallengeSolved",
   onError: (e) => {
     console.log(e);
@@ -62,7 +64,62 @@ const unwatchSecurityContract = webSocketClient.watchContractEvent({
         challenge,
         transactionHash,
         courseName: "security",
-        shouldSendTweet: true,
+        chainId: arbitrum.id,
+        shouldSendTweet,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+});
+
+const unwatchFoundryContractZkSync = webSocketClientZkSync.watchContractEvent({
+  address: FOUNDRY_COURSE_CONFIG.address[zkSync.id],
+  abi: FOUNDRY_COURSE_CONFIG.abi,
+  eventName: "ChallengeSolved",
+  onError: (e) => {
+    console.log(e);
+  },
+  onLogs: (logs) => {
+    const {
+      transactionHash,
+      args: { challenge, twitterHandle },
+    } = logs[0] as ChallengeEventLog;
+    try {
+      handleChallengeSolvedEvent({
+        twitterHandle,
+        challenge,
+        transactionHash,
+        courseName: "foundry",
+        chainId: zkSync.id,
+        shouldSendTweet,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+});
+
+const unwatchSecurityContractZkSync = webSocketClientZkSync.watchContractEvent({
+  address: SECURITY_COURSE_CONFIG.address[zkSync.id],
+  abi: SECURITY_COURSE_CONFIG.abi,
+  eventName: "ChallengeSolved",
+  onError: (e) => {
+    console.log(e);
+  },
+  onLogs: (logs) => {
+    const {
+      transactionHash,
+      args: { challenge, twitterHandle },
+    } = logs[0] as ChallengeEventLog;
+    try {
+      handleChallengeSolvedEvent({
+        twitterHandle,
+        challenge,
+        transactionHash,
+        courseName: "security",
+        chainId: zkSync.id,
+        shouldSendTweet,
       });
     } catch (e) {
       console.log(e);

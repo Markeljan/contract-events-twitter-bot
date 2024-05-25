@@ -1,19 +1,28 @@
-import { FOUNDRY_COURSE_ABI, FOUNDRY_COURSE_ADDRESS, SECURITY_COURSE_ABI, SECURITY_COURSE_ADDRESS } from "./constants";
-import { ChallengeEventLog, CourseName } from "./types";
-import { handleChallengeSolvedEvent, publicClient } from "./handleChallengeSolved";
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "./constants";
+import { ChainId, ChallengeEventLog, CourseName } from "./types";
+import { handleChallengeSolvedEvent } from "./handleChallengeSolved";
+import { publicClientArbitrum, publicClientZkSync } from "./config";
+import { Abi } from "viem";
+import { arbitrum, zkSync } from "viem/chains";
 
 /////////////////////////////////
 //  Manually trigger an event  //
 /////////////////////////////////
 
-const triggerPastEvent = async (eventIndex: number, courseName: CourseName, shouldSendTweet: boolean = false) => {
+const triggerPastEvent = async (
+  eventIndex: number,
+  courseName: CourseName,
+  chainId: ChainId,
+  shouldSendTweet: boolean = false
+) => {
   // Create a filter for the ChallengeSolved event
-  const challengeSolvedFilter: any = await publicClient.createContractEventFilter({
-    abi: courseName === "foundry" ? FOUNDRY_COURSE_ABI : SECURITY_COURSE_ABI,
-    address: courseName === "foundry" ? FOUNDRY_COURSE_ADDRESS : SECURITY_COURSE_ADDRESS,
+  const publicClient = chainId === arbitrum.id ? publicClientArbitrum : publicClientZkSync;
+  const challengeSolvedFilter = await publicClient.createContractEventFilter({
+    abi: (courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.abi : SECURITY_COURSE_CONFIG.abi) as Abi,
+    address:
+      courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.address[chainId] : SECURITY_COURSE_CONFIG.address[chainId],
     eventName: "ChallengeSolved",
-    fromBlock: 97795932n,
-    strict: true,
+    fromBlock: chainId === arbitrum.id ? 97795932n : 34760049n,
   });
   // Get the logs for the filter
   const logs = await publicClient.getFilterLogs({ filter: challengeSolvedFilter });
@@ -27,6 +36,7 @@ const triggerPastEvent = async (eventIndex: number, courseName: CourseName, shou
       challenge,
       transactionHash,
       courseName,
+      chainId,
       shouldSendTweet,
     });
   } catch (e) {
@@ -41,14 +51,17 @@ const triggerPastEvent = async (eventIndex: number, courseName: CourseName, shou
 // Usage: bun run triggerEvent <eventIndex> <courseName> [shouldSendTweet]
 const main = async () => {
   const args = process.argv.slice(2);
-  if (args.length < 2 || args.length > 3) {
-    console.error("Usage: bun run triggerEvent <eventIndex> <courseName> [shouldSendTweet]");
+  if (args.length < 3 || args.length > 4) {
+    console.error(
+      `Usage: bun run triggerEvent <eventIndex: number> <courseName: foundry | security> chain: arbitrum | zksync <shouldSendTweet?: boolean>`
+    );
     process.exit(1);
   }
 
   const eventIndex = parseInt(args[0], 10);
   const courseName = args[1];
-  const shouldSendTweet = args.length === 3 ? args[2] === "true" : false; // Default to false if not provided
+  const chain = args[2];
+  const shouldSendTweet = args.length === 4 ? args[3] === "true" : false; // Default to false if not provided
 
   if (isNaN(eventIndex)) {
     console.error("Invalid event index: must be a number.");
@@ -60,8 +73,15 @@ const main = async () => {
     process.exit(1);
   }
 
+  if (chain !== "arbitrum" && chain !== "zksync") {
+    console.error("Invalid chain name: must be either 'arbitrum' or 'zksync'.");
+    process.exit(1);
+  }
+
+  const chainId = chain === "arbitrum" ? arbitrum.id : zkSync.id;
+
   try {
-    await triggerPastEvent(eventIndex, courseName, shouldSendTweet);
+    await triggerPastEvent(eventIndex, courseName, chainId, shouldSendTweet);
   } catch (error) {
     console.error("Error triggering event:", error);
     process.exit(1);

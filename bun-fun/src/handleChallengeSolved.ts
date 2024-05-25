@@ -1,52 +1,34 @@
-import {
-  Hash,
-  Address,
-  TransactionReceipt,
-  encodeEventTopics,
-  decodeEventLog,
-  fromHex,
-  createPublicClient,
-  http,
-  PublicClient,
-} from "viem";
-import {
-  LESSON_DICTIONARY,
-  FOUNDRY_COURSE_ABI,
-  SECURITY_COURSE_ABI,
-  FOUNDRY_COURSE_ADDRESS,
-  SECURITY_COURSE_ADDRESS,
-  RPC_PROVIDER_API_KEY,
-} from "./constants";
+import { Hash, Address, encodeEventTopics, decodeEventLog } from "viem";
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "./constants";
 import { sendTweet } from "./sendTweet";
-import { CourseName, TransferEventLog, TweetData } from "./types";
+import { ChainId, CourseName, TweetData } from "./types";
+import { publicClientArbitrum, publicClientZkSync } from "./config";
 import { arbitrum } from "viem/chains";
-
-export const publicClient: PublicClient = createPublicClient({
-  chain: arbitrum,
-  transport: http(`https://arb-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`),
-});
 
 // Function to handle ChallengeSolved event
 export const handleChallengeSolvedEvent = async ({
   twitterHandle,
-  challenge,
   transactionHash,
+  chainId,
   courseName,
+  challenge,
   shouldSendTweet = false,
 }: {
   twitterHandle: string;
-  challenge: string;
+  challenge: Address;
+  chainId: ChainId;
   transactionHash: Hash;
   courseName: CourseName;
   shouldSendTweet?: boolean;
 }) => {
+  const courseConfig = courseName === "foundry" ? FOUNDRY_COURSE_CONFIG : SECURITY_COURSE_CONFIG;
   const sanitizedHandle = sanitizeHandle(twitterHandle);
-  const lessonId = LESSON_DICTIONARY[challenge as Address];
-  const tokenId = await getTokenId(transactionHash, courseName);
+  const lessonId = courseConfig.lessonDictionary[chainId][challenge];
+  const tokenId = await getTokenId(transactionHash, courseName, chainId);
   if (!twitterHandle) {
     throw new Error("Invalid twitter handle: " + twitterHandle);
   }
-  const tweetMessage = formatTweetMessage({ twitterHandle: sanitizedHandle, tokenId, lessonId, courseName });
+  const tweetMessage = formatTweetMessage({ twitterHandle: sanitizedHandle, tokenId, lessonId, courseName, chainId });
   if (shouldSendTweet) {
     console.log(`Sending tweet: ${tweetMessage}`);
     sendTweet(tweetMessage);
@@ -68,12 +50,13 @@ const sanitizeHandle = (twitterHandleInput: string): string => {
 };
 
 // Function to get tokenId from transactionHash
-const getTokenId = async (transactionHash: Hash, courseName: CourseName): Promise<number> => {
-  const transactionReceipt: TransactionReceipt = await publicClient.getTransactionReceipt({
+const getTokenId = async (transactionHash: Hash, courseName: CourseName, chainId: ChainId): Promise<number> => {
+  const publicClient = chainId === arbitrum.id ? publicClientArbitrum : publicClientZkSync;
+  const transactionReceipt = await publicClient.getTransactionReceipt({
     hash: transactionHash,
   });
   const transferTopics = encodeEventTopics({
-    abi: courseName === "foundry" ? FOUNDRY_COURSE_ABI : SECURITY_COURSE_ABI,
+    abi: courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.abi : SECURITY_COURSE_CONFIG.abi,
     eventName: "Transfer",
     args: {
       from: "0x0000000000000000000000000000000000000000",
@@ -89,23 +72,27 @@ const getTokenId = async (transactionHash: Hash, courseName: CourseName): Promis
     }
 
     const decodedEventLog = decodeEventLog({
-      abi: courseName === "foundry" ? FOUNDRY_COURSE_ABI : SECURITY_COURSE_ABI,
+      abi: courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.abi : SECURITY_COURSE_CONFIG.abi,
       eventName: "Transfer",
-      topics: transactionReceipt.logs[i]["topics"],
+      topics: transactionReceipt.logs[i].topics,
       data: transactionReceipt.logs[i].data,
-    }) as TransferEventLog;
+    });
 
-    const tokenId = fromHex(decodedEventLog.args["tokenId"], "number");
+    const tokenId = Number(decodedEventLog.args.tokenId);
     return tokenId;
   }
 
   throw new Error("Could not get tokenId in event logs for transaction " + transactionHash);
 };
 
-function formatTweetMessage({ twitterHandle, tokenId, lessonId, courseName }: TweetData & { courseName: CourseName }) {
-  const contractAddress = courseName === "foundry" ? FOUNDRY_COURSE_ADDRESS : SECURITY_COURSE_ADDRESS;
-  const openseaUrl = `https://opensea.io/assets/arbitrum/${contractAddress}/${tokenId}`;
+function formatTweetMessage({ twitterHandle, tokenId, lessonId, courseName, chainId }: TweetData): string {
+  const contractAddress =
+    courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.address[chainId] : SECURITY_COURSE_CONFIG.address[chainId];
+  const openseaUrl =
+    chainId === arbitrum.id
+      ? `https://opensea.io/assets/arbitrum/${contractAddress}/${tokenId}`
+      : `https://zkmarkets.com/zksync-era/collections/${contractAddress}/nfts/${tokenId}`;
   const courseNameCapitalized = courseName.charAt(0).toUpperCase() + courseName.slice(1);
-  const message = `Congrats ${twitterHandle} for minting Lesson ${lessonId} of the ${courseNameCapitalized} course!\n\nYou can view the NFT on Opensea here\n${openseaUrl}`;
+  const message = `Congrats ${twitterHandle} for minting Lesson ${lessonId} of the ${courseNameCapitalized} course!\n\nYou can view the NFT here\n${openseaUrl}`;
   return message;
 }

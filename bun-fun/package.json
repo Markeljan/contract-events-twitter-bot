@@ -1,21 +1,21 @@
 {
-  "name": "bun-fun",
+  "name": "updraft-challenges",
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "dev": "bun src/index.ts",
-    "build": "bun build src/index.ts --outdir build --target node",
-    "start": "bun build/index.js",
+    "build": "NODE_ENV=production bun build src/index.ts --outdir out --target bun",
+    "start": "bun out/index.js",
     "triggerEvent": "bun run src/triggerPastEvent.ts"
-  },
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   },
   "dependencies": {
     "oauth-1.0a": "^2.2.6",
-    "viem": "^1.19.11"
+    "viem": "^2.12.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }
