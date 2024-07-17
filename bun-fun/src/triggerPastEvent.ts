@@ -1,9 +1,10 @@
-import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "./constants";
-import { ChainId, ChallengeEventLog, CourseName } from "./types";
-import { handleChallengeSolvedEvent } from "./handleChallengeSolved";
-import { publicClientArbitrum, publicClientZkSync } from "./config";
-import { Abi } from "viem";
+import type { Abi } from "viem";
 import { arbitrum, zkSync } from "viem/chains";
+
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "./constants";
+import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
+import { handleChallengeSolvedEvent } from "@/handleChallengeSolved";
+import { publicClientArbitrum, publicClientZkSync } from "@/config";
 
 /////////////////////////////////
 //  Manually trigger an event  //
@@ -13,7 +14,7 @@ const triggerPastEvent = async (
   eventIndex: number,
   courseName: CourseName,
   chainId: ChainId,
-  shouldSendTweet: boolean = false
+  shouldSendTweet = false
 ) => {
   // Create a filter for the ChallengeSolved event
   const publicClient = chainId === arbitrum.id ? publicClientArbitrum : publicClientZkSync;
@@ -53,17 +54,17 @@ const main = async () => {
   const args = process.argv.slice(2);
   if (args.length < 3 || args.length > 4) {
     console.error(
-      `Usage: bun run triggerEvent <eventIndex: number> <courseName: foundry | security> chain: arbitrum | zksync <shouldSendTweet?: boolean>`
+      "Usage: bun run triggerEvent <eventIndex: number> <courseName: foundry | security> chain: arbitrum | zksync <shouldSendTweet?: boolean>"
     );
     process.exit(1);
   }
 
-  const eventIndex = parseInt(args[0], 10);
+  const eventIndex = Number.parseInt(args[0], 10);
   const courseName = args[1];
   const chain = args[2];
   const shouldSendTweet = args.length === 4 ? args[3] === "true" : false; // Default to false if not provided
 
-  if (isNaN(eventIndex)) {
+  if (Number.isNaN(eventIndex)) {
     console.error("Invalid event index: must be a number.");
     process.exit(1);
   }

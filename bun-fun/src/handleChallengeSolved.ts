@@ -1,9 +1,10 @@
-import { Hash, Address, encodeEventTopics, decodeEventLog } from "viem";
-import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "./constants";
-import { sendTweet } from "./sendTweet";
-import { ChainId, CourseName, TweetData } from "./types";
-import { publicClientArbitrum, publicClientZkSync } from "./config";
+import { type Address, type Hash, decodeEventLog, encodeEventTopics } from "viem";
 import { arbitrum } from "viem/chains";
+
+import { publicClientArbitrum, publicClientZkSync } from "@/config";
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "@/constants";
+import { sendTweet } from "@/sendTweet";
+import type { ChainId, CourseName, TweetData } from "@/types";
 
 // Function to handle ChallengeSolved event
 export const handleChallengeSolvedEvent = async ({
@@ -26,7 +27,7 @@ export const handleChallengeSolvedEvent = async ({
   const lessonId = courseConfig.lessonDictionary[chainId][challenge];
   const tokenId = await getTokenId(transactionHash, courseName, chainId);
   if (!twitterHandle) {
-    throw new Error("Invalid twitter handle: " + twitterHandle);
+    throw new Error(`Invalid twitter handle: ${twitterHandle}`);
   }
   const tweetMessage = formatTweetMessage({ twitterHandle: sanitizedHandle, tokenId, lessonId, courseName, chainId });
   if (shouldSendTweet) {
@@ -44,8 +45,8 @@ const sanitizeHandle = (twitterHandleInput: string): string => {
   if (handle.startsWith("https://x.com/")) handle = handle.replace("https://x.com/", "");
   if (handle.startsWith("twitter.com/")) handle = handle.replace("twitter.com/", "");
   if (handle.startsWith("https://twitter.com/")) handle = handle.replace("https://twitter.com/", "");
-  if (!handle.startsWith("@")) handle = "@" + handle;
-  if (!/^@[a-zA-Z0-9_]{1,15}$/.test(handle)) throw new Error("Invalid twitter handle: " + handle);
+  if (!handle.startsWith("@")) handle = `@${handle}`;
+  if (!/^@[a-zA-Z0-9_]{1,15}$/.test(handle)) throw new Error(`Invalid twitter handle: ${handle}`);
   return handle;
 };
 
@@ -65,8 +66,8 @@ const getTokenId = async (transactionHash: Hash, courseName: CourseName, chainId
 
   for (let i = 0; i < transactionReceipt.logs.length; i++) {
     if (
-      transactionReceipt.logs[i]["topics"][0] !== transferTopics[0] ||
-      transactionReceipt.logs[i]["topics"][1] !== transferTopics[1]
+      transactionReceipt.logs[i].topics[0] !== transferTopics[0] ||
+      transactionReceipt.logs[i].topics[1] !== transferTopics[1]
     ) {
       continue;
     }
@@ -82,7 +83,7 @@ const getTokenId = async (transactionHash: Hash, courseName: CourseName, chainId
     return tokenId;
   }
 
-  throw new Error("Could not get tokenId in event logs for transaction " + transactionHash);
+  throw new Error(`Could not get tokenId in event logs for transaction ${transactionHash}`);
 };
 
 function formatTweetMessage({ twitterHandle, tokenId, lessonId, courseName, chainId }: TweetData): string {

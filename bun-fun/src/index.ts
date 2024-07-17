@@ -1,8 +1,9 @@
 import { createPublicClient, webSocket } from "viem";
 import { arbitrum, zkSync } from "viem/chains";
-import { ChallengeEventLog } from "./types.ts";
-import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG, RPC_PROVIDER_API_KEY } from "./constants.ts";
-import { handleChallengeSolvedEvent } from "./handleChallengeSolved.ts";
+
+import { FOUNDRY_COURSE_CONFIG, RPC_PROVIDER_API_KEY, SECURITY_COURSE_CONFIG } from "@/constants.ts";
+import { handleChallengeSolvedEvent } from "@/handleChallengeSolved.ts";
+import type { ChallengeEventLog } from "@/types.ts";
 
 const shouldSendTweet = process.env.NODE_ENV === "production";
 

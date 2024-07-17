@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "oauth-1.0a": "^2.2.6",
-    "viem": "^2.12.1"
+    "viem": "^2.17.4"
   },
   "devDependencies": {
     "@types/bun": "latest"

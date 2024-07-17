@@ -1,5 +1,5 @@
-import { arbitrum, zkSync } from "viem/chains";
-import { Hash, Hex, Log } from "viem";
+import type { Hash, Hex, Log } from "viem";
+import type { arbitrum, zkSync } from "viem/chains";
 
 export type CourseName = "foundry" | "security" | "foundry-zk" | "security-zk";
 

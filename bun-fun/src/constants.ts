@@ -1,8 +1,15 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 import { arbitrum, zkSync } from "viem/chains";
-import { ChainId } from "./types";
 
-export const RPC_PROVIDER_API_KEY = process.env.RPC_PROVIDER_API_KEY;
+import type { ChainId } from "@/types";
+
+export const RPC_PROVIDER_API_KEY = (() => {
+  const key = process.env.RPC_PROVIDER_API_KEY;
+  if (!key) {
+    throw new Error("RPC_PROVIDER_API_KEY is not defined");
+  }
+  return key;
+})();
 
 type LessonDictionary = Record<ChainId, Record<Address, string>>;
 
