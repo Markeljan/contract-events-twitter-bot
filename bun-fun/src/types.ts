@@ -1,9 +1,9 @@
 import type { Hash, Hex, Log } from "viem";
-import type { arbitrum, zkSync } from "viem/chains";
+import type { arbitrum, zksync } from "viem/chains";
 
 export type CourseName = "foundry" | "security" | "foundry-zk" | "security-zk";
 
-export type ChainId = typeof arbitrum.id | typeof zkSync.id;
+export type ChainId = typeof arbitrum.id | typeof zksync.id;
 
 export type TweetData = {
   twitterHandle: string;

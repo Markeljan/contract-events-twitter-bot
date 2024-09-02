@@ -1,5 +1,5 @@
 import type { Address } from "viem";
-import { arbitrum, zkSync } from "viem/chains";
+import { arbitrum, zksync } from "viem/chains";
 
 import type { ChainId } from "@/types";
 
@@ -16,7 +16,7 @@ type LessonDictionary = Record<ChainId, Record<Address, string>>;
 export const FOUNDRY_COURSE_CONFIG = {
   address: {
     [arbitrum.id]: "0x39338138414Df90EC67dC2EE046ab78BcD4F56D9" as Address,
-    [zkSync.id]: "0xBbA202c6DA89646F13C11a63C4aF182E4fFd4c2e" as Address,
+    [zksync.id]: "0xBbA202c6DA89646F13C11a63C4aF182E4fFd4c2e" as Address,
   },
   lessonDictionary: {
     [arbitrum.id]: {
@@ -36,7 +36,7 @@ export const FOUNDRY_COURSE_CONFIG = {
       "0xc584bD01fD60F671409661a6802170BbEFba5c47": "14",
       "0xa0c7ADA2c7c29729d12e2649BC6a0a293Ac46725": "15",
     },
-    [zkSync.id]: {
+    [zksync.id]: {
       "0xfa257F68Ca436F6e00299917837D7712Fa5bdf75": "FS1",
       "0x5f9f9f46ECb48D625e320888922Bf86555608E9C": "FS2",
       "0x1D5c2Eb5F17Fa0BA4E3DfDDBF59DC0e6316219Ff": "FS3",
@@ -697,7 +697,7 @@ export const FOUNDRY_COURSE_CONFIG = {
 export const SECURITY_COURSE_CONFIG = {
   address: {
     [arbitrum.id]: "0xDe0e797bfAd78F0615d75430C53F8fe3C9e49883" as Address,
-    [zkSync.id]: "0x176bB45B13AA90D2CD313d526F14a2F4C6583495" as Address,
+    [zksync.id]: "0x176bB45B13AA90D2CD313d526F14a2F4C6583495" as Address,
   },
   lessonDictionary: {
     [arbitrum.id]: {
@@ -711,7 +711,7 @@ export const SECURITY_COURSE_CONFIG = {
       "0xB855afC44095225105329a7416D55d0A780fc39d": "S7",
       "0xC0B55591dE55258021985Aed8DD2af40fbD659C7": "S8",
     },
-    [zkSync.id]: {
+    [zksync.id]: {
       "0x792c3109086241130545cDa23d2E4244B64d8296": "SS0",
       "0x096f1835070EfCC3C53FFBA41C23cfD087e85b51": "SS1",
       "0xc8B948a7fF5FBfC4b7334fF7628973aefC469A9d": "SS2",

@@ -1,7 +1,7 @@
 import type { Abi } from "viem";
-import { arbitrum, zkSync } from "viem/chains";
+import { arbitrum, zksync } from "viem/chains";
 
-import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "./constants";
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "@/constants";
 import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
 import { handleChallengeSolvedEvent } from "@/handleChallengeSolved";
 import { publicClientArbitrum, publicClientZkSync } from "@/config";
@@ -49,7 +49,7 @@ const triggerPastEvent = async (
 //  CLI for manual testing  //
 /////////////////////////////
 
-// Usage: bun run triggerEvent <eventIndex> <courseName> [shouldSendTweet]
+// Usage: bun triggerEvent 182 security arbitrum false
 const main = async () => {
   const args = process.argv.slice(2);
   if (args.length < 3 || args.length > 4) {
@@ -79,7 +79,7 @@ const main = async () => {
     process.exit(1);
   }
 
-  const chainId = chain === "arbitrum" ? arbitrum.id : zkSync.id;
+  const chainId = chain === "arbitrum" ? arbitrum.id : zksync.id;
 
   try {
     await triggerPastEvent(eventIndex, courseName, chainId, shouldSendTweet);

@@ -1,5 +1,5 @@
 import { createPublicClient, webSocket } from "viem";
-import { arbitrum, zkSync } from "viem/chains";
+import { arbitrum, zksync } from "viem/chains";
 
 import { FOUNDRY_COURSE_CONFIG, RPC_PROVIDER_API_KEY, SECURITY_COURSE_CONFIG } from "@/constants.ts";
 import { handleChallengeSolvedEvent } from "@/handleChallengeSolved.ts";
@@ -13,7 +13,7 @@ const webSocketClientArbitrum = createPublicClient({
 });
 
 const webSocketClientZkSync = createPublicClient({
-  chain: zkSync,
+  chain: zksync,
   transport: webSocket(`wss://zksync-mainnet.g.alchemy.com/v2/${RPC_PROVIDER_API_KEY}`),
 });
 
@@ -75,7 +75,7 @@ const unwatchSecurityContract = webSocketClientArbitrum.watchContractEvent({
 });
 
 const unwatchFoundryContractZkSync = webSocketClientZkSync.watchContractEvent({
-  address: FOUNDRY_COURSE_CONFIG.address[zkSync.id],
+  address: FOUNDRY_COURSE_CONFIG.address[zksync.id],
   abi: FOUNDRY_COURSE_CONFIG.abi,
   eventName: "ChallengeSolved",
   onError: (e) => {
@@ -92,7 +92,7 @@ const unwatchFoundryContractZkSync = webSocketClientZkSync.watchContractEvent({
         challenge,
         transactionHash,
         courseName: "foundry",
-        chainId: zkSync.id,
+        chainId: zksync.id,
         shouldSendTweet,
       });
     } catch (e) {
@@ -102,7 +102,7 @@ const unwatchFoundryContractZkSync = webSocketClientZkSync.watchContractEvent({
 });
 
 const unwatchSecurityContractZkSync = webSocketClientZkSync.watchContractEvent({
-  address: SECURITY_COURSE_CONFIG.address[zkSync.id],
+  address: SECURITY_COURSE_CONFIG.address[zksync.id],
   abi: SECURITY_COURSE_CONFIG.abi,
   eventName: "ChallengeSolved",
   onError: (e) => {
@@ -119,7 +119,7 @@ const unwatchSecurityContractZkSync = webSocketClientZkSync.watchContractEvent({
         challenge,
         transactionHash,
         courseName: "security",
-        chainId: zkSync.id,
+        chainId: zksync.id,
         shouldSendTweet,
       });
     } catch (e) {

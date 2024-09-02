@@ -6,11 +6,12 @@
     "dev": "bun src/index.ts",
     "build": "NODE_ENV=production bun build src/index.ts --outdir out --target bun",
     "start": "bun out/index.js",
-    "triggerEvent": "bun run src/triggerPastEvent.ts"
+    "triggerEvent": "bun run src/scripts/triggerPastEvent.ts",
+    "backfillEvents": "bun run src/scripts/backfillEvents.ts"
   },
   "dependencies": {
     "oauth-1.0a": "^2.2.6",
-    "viem": "^2.17.4"
+    "viem": "^2.21.1"
   },
   "devDependencies": {
     "@types/bun": "latest"

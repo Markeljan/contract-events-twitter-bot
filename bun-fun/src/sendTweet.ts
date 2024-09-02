@@ -1,4 +1,4 @@
-const { createHmac } = await import("crypto");
+const { createHmac } = await import("node:crypto");
 import OAuth from "oauth-1.0a";
 
 const TWITTER_CONSUMER_KEY = `${process.env.TWITTER_CONSUMER_KEY}`;
