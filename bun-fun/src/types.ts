@@ -24,12 +24,3 @@ export type ChallengeEventLog = {
   eventName: "ChallengeSolved";
   transactionHash: Hash;
 } & Log;
-
-export type TransferEventLog = {
-  eventName: "Transfer";
-  args: {
-    from: Hex;
-    to: Hex;
-    tokenId: Hex;
-  };
-};

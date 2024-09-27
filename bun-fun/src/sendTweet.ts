@@ -1,10 +1,7 @@
-const { createHmac } = await import("node:crypto");
+import { createHmac } from "node:crypto";
 import OAuth from "oauth-1.0a";
 
-const TWITTER_CONSUMER_KEY = `${process.env.TWITTER_CONSUMER_KEY}`;
-const TWITTER_CONSUMER_SECRET = `${process.env.TWITTER_CONSUMER_SECRET}`;
-const TWITTER_ACCESS_TOKEN = `${process.env.TWITTER_ACCESS_TOKEN}`;
-const TWITTER_TOKEN_SECRET = `${process.env.TWITTER_TOKEN_SECRET}`;
+import { TWITTER_ACCESS_TOKEN, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_TOKEN_SECRET } from "@/config";
 
 const tweetQueue: string[] = [];
 

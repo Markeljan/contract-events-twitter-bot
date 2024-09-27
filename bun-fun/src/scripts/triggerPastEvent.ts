@@ -1,10 +1,10 @@
 import type { Abi } from "viem";
 import { arbitrum, zksync } from "viem/chains";
 
+import { publicClientArbitrum, publicClientZkSync } from "@/clients";
 import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "@/constants";
-import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
 import { handleChallengeSolvedEvent } from "@/handleChallengeSolved";
-import { publicClientArbitrum, publicClientZkSync } from "@/config";
+import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
 
 /////////////////////////////////
 //  Manually trigger an event  //

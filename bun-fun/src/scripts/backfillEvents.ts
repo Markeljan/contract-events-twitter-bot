@@ -1,10 +1,10 @@
 import type { Abi } from "viem";
 import { arbitrum, zksync } from "viem/chains";
 
-import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "../constants";
-import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
+import { publicClientArbitrum, publicClientZkSync } from "@/clients";
+import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "@/constants";
 import { handleChallengeSolvedEvent } from "@/handleChallengeSolved";
-import { publicClientArbitrum, publicClientZkSync } from "@/config";
+import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

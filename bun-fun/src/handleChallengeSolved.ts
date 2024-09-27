@@ -1,7 +1,7 @@
 import { type Address, type Hash, decodeEventLog, encodeEventTopics } from "viem";
 import { arbitrum } from "viem/chains";
 
-import { publicClientArbitrum, publicClientZkSync } from "@/config";
+import { publicClientArbitrum, publicClientZkSync } from "@/clients";
 import { FOUNDRY_COURSE_CONFIG, SECURITY_COURSE_CONFIG } from "@/constants";
 import { sendTweet } from "@/sendTweet";
 import type { ChainId, CourseName, TweetData } from "@/types";

@@ -3,14 +3,6 @@ import { arbitrum, zksync } from "viem/chains";
 
 import type { ChainId } from "@/types";
 
-export const RPC_PROVIDER_API_KEY = (() => {
-  const key = process.env.RPC_PROVIDER_API_KEY;
-  if (!key) {
-    throw new Error("RPC_PROVIDER_API_KEY is not defined");
-  }
-  return key;
-})();
-
 type LessonDictionary = Record<ChainId, Record<Address, string>>;
 
 export const FOUNDRY_COURSE_CONFIG = {
