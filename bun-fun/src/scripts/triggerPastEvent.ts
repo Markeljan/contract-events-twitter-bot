@@ -11,38 +11,52 @@ import type { ChainId, ChallengeEventLog, CourseName } from "@/types";
 /////////////////////////////////
 
 const triggerPastEvent = async (
-  eventIndex: number,
-  courseName: CourseName,
-  chainId: ChainId,
-  shouldSendTweet = false
+	eventIndex: number,
+	courseName: CourseName,
+	chainId: ChainId,
+	shouldSendTweet = false,
 ) => {
-  // Create a filter for the ChallengeSolved event
-  const publicClient = chainId === arbitrum.id ? publicClientArbitrum : publicClientZkSync;
-  const challengeSolvedFilter = await publicClient.createContractEventFilter({
-    abi: (courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.abi : SECURITY_COURSE_CONFIG.abi) as Abi,
-    address:
-      courseName === "foundry" ? FOUNDRY_COURSE_CONFIG.address[chainId] : SECURITY_COURSE_CONFIG.address[chainId],
-    eventName: "ChallengeSolved",
-    fromBlock: chainId === arbitrum.id ? 97795932n : 34760049n,
-  });
-  // Get the logs for the filter
-  const logs = await publicClient.getFilterLogs({ filter: challengeSolvedFilter });
-  const transactionHash = logs[eventIndex].transactionHash;
-  const { twitterHandle, challenge } = (logs[eventIndex] as ChallengeEventLog).args;
-  console.log("Found event: ", twitterHandle, challenge, transactionHash, courseName);
-  try {
-    // Call handleChallengeSolvedEvent to send or simulate a tweet
-    handleChallengeSolvedEvent({
-      twitterHandle,
-      challenge,
-      transactionHash,
-      courseName,
-      chainId,
-      shouldSendTweet,
-    });
-  } catch (e) {
-    console.log(e);
-  }
+	// Create a filter for the ChallengeSolved event
+	const publicClient =
+		chainId === arbitrum.id ? publicClientArbitrum : publicClientZkSync;
+	const challengeSolvedFilter = await publicClient.createContractEventFilter({
+		abi: (courseName === "foundry"
+			? FOUNDRY_COURSE_CONFIG.abi
+			: SECURITY_COURSE_CONFIG.abi) as Abi,
+		address:
+			courseName === "foundry"
+				? FOUNDRY_COURSE_CONFIG.address[chainId]
+				: SECURITY_COURSE_CONFIG.address[chainId],
+		eventName: "ChallengeSolved",
+		fromBlock: chainId === arbitrum.id ? 97795932n : 34760049n,
+	});
+	// Get the logs for the filter
+	const logs = await publicClient.getFilterLogs({
+		filter: challengeSolvedFilter,
+	});
+	const transactionHash = logs[eventIndex].transactionHash;
+	const { twitterHandle, challenge } = (logs[eventIndex] as ChallengeEventLog)
+		.args;
+	console.log(
+		"Found event: ",
+		twitterHandle,
+		challenge,
+		transactionHash,
+		courseName,
+	);
+	try {
+		// Call handleChallengeSolvedEvent to send or simulate a tweet
+		handleChallengeSolvedEvent({
+			twitterHandle,
+			challenge,
+			transactionHash,
+			courseName,
+			chainId,
+			shouldSendTweet,
+		});
+	} catch (e) {
+		console.log(e);
+	}
 };
 
 //////////////////////////////
@@ -51,42 +65,44 @@ const triggerPastEvent = async (
 
 // Usage: bun triggerEvent 182 security arbitrum false
 const main = async () => {
-  const args = process.argv.slice(2);
-  if (args.length < 3 || args.length > 4) {
-    console.error(
-      "Usage: bun run triggerEvent <eventIndex: number> <courseName: foundry | security> chain: arbitrum | zksync <shouldSendTweet?: boolean>"
-    );
-    process.exit(1);
-  }
+	const args = process.argv.slice(2);
+	if (args.length < 3 || args.length > 4) {
+		console.error(
+			"Usage: bun run triggerEvent <eventIndex: number> <courseName: foundry | security> chain: arbitrum | zksync <shouldSendTweet?: boolean>",
+		);
+		process.exit(1);
+	}
 
-  const eventIndex = Number.parseInt(args[0], 10);
-  const courseName = args[1];
-  const chain = args[2];
-  const shouldSendTweet = args.length === 4 ? args[3] === "true" : false; // Default to false if not provided
+	const eventIndex = Number.parseInt(args[0], 10);
+	const courseName = args[1];
+	const chain = args[2];
+	const shouldSendTweet = args.length === 4 ? args[3] === "true" : false; // Default to false if not provided
 
-  if (Number.isNaN(eventIndex)) {
-    console.error("Invalid event index: must be a number.");
-    process.exit(1);
-  }
+	if (Number.isNaN(eventIndex)) {
+		console.error("Invalid event index: must be a number.");
+		process.exit(1);
+	}
 
-  if (courseName !== "foundry" && courseName !== "security") {
-    console.error("Invalid course name: must be either 'foundry' or 'security'.");
-    process.exit(1);
-  }
+	if (courseName !== "foundry" && courseName !== "security") {
+		console.error(
+			"Invalid course name: must be either 'foundry' or 'security'.",
+		);
+		process.exit(1);
+	}
 
-  if (chain !== "arbitrum" && chain !== "zksync") {
-    console.error("Invalid chain name: must be either 'arbitrum' or 'zksync'.");
-    process.exit(1);
-  }
+	if (chain !== "arbitrum" && chain !== "zksync") {
+		console.error("Invalid chain name: must be either 'arbitrum' or 'zksync'.");
+		process.exit(1);
+	}
 
-  const chainId = chain === "arbitrum" ? arbitrum.id : zksync.id;
+	const chainId = chain === "arbitrum" ? arbitrum.id : zksync.id;
 
-  try {
-    await triggerPastEvent(eventIndex, courseName, chainId, shouldSendTweet);
-  } catch (error) {
-    console.error("Error triggering event:", error);
-    process.exit(1);
-  }
+	try {
+		await triggerPastEvent(eventIndex, courseName, chainId, shouldSendTweet);
+	} catch (error) {
+		console.error("Error triggering event:", error);
+		process.exit(1);
+	}
 };
 
 main();

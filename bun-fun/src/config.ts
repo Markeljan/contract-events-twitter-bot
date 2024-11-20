@@ -1,12 +1,12 @@
 declare module "bun" {
-  interface Env {
-    RPC_PROVIDER_API_KEY: string;
+	interface Env {
+		RPC_PROVIDER_API_KEY: string;
 
-    TWITTER_CONSUMER_KEY: string;
-    TWITTER_CONSUMER_SECRET: string;
-    TWITTER_ACCESS_TOKEN: string;
-    TWITTER_TOKEN_SECRET: string;
-  }
+		TWITTER_CONSUMER_KEY: string;
+		TWITTER_CONSUMER_SECRET: string;
+		TWITTER_ACCESS_TOKEN: string;
+		TWITTER_TOKEN_SECRET: string;
+	}
 }
 
 export const RPC_PROVIDER_API_KEY = process.env.RPC_PROVIDER_API_KEY;

@@ -4,19 +4,19 @@
   "type": "module",
   "scripts": {
     "dev": "bun src/index.ts",
-    "build": "bun build --define process.env.NODE_ENV=\"'production'\" --compile --minify --sourcemap src/index.ts --outfile out/updraft-nfts",
+    "build": "bun build --target bun --define process.env.NODE_ENV=\"'production'\" --compile --sourcemap src/index.ts --outfile out/updraft-nfts",
     "start": "bun out/updraft-nfts",
     "triggerEvent": "bun run src/scripts/triggerPastEvent.ts",
     "backfillEvents": "bun run src/scripts/backfillEvents.ts"
   },
   "dependencies": {
     "oauth-1.0a": "^2.2.6",
-    "viem": "^2.21.15"
+    "viem": "^2.21.48"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.6.2"
   }
 }
